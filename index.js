@@ -64,16 +64,18 @@ function filterTransactionsByDate(transactions, minDate, maxDate) {
 }
 
 function getTopCustomers(transactions, customersDB, minDate, maxDate) {
-  const validTransactions = filterTransactionsByDate(
+  const filteredTransactions = filterTransactionsByDate(
     transactions,
     minDate,
     maxDate
   );
   // now we need to reduce the transactions to a new array, one entry for each customerID
-  const aggregates = validTransactions.reduce((aggregates, transaction) => {
+  const aggregates = filteredTransactions.reduce((aggregates, transaction) => {
+    // try to find the aggregate for this customer ID
     let thisAggregate = _.find(aggregates, {
       customerID: transaction.customerID
     });
+    // or make a new aggregate if we don't find one
     if (!thisAggregate) {
       thisAggregate = {
         customerID: transaction.customerID,
@@ -102,7 +104,7 @@ const transactions = makeTransactionsDatabase(customerIDs);
 const topCustomers = getTopCustomers(
   transactions,
   customerDB,
-  Date.now() - 300 * MS_PER_DAY,
+  Date.now() - 100 * MS_PER_DAY,
   Date.now()
 );
 console.log(
